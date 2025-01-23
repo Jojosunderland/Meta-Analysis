@@ -185,13 +185,15 @@ forest(meta5,cex.lab=0.8,cex.axis=0.8,addfit=TRUE,shade="zebra",order="obs")
 
 
 #Q1. Has the brood size of the average bird species declined?
-#A. Probably not, estimate is very minimally negative (-0.006) and a very large p-value suggests the evidence is not significant
+#A. Probably not, estimate is very minimally negative (-0.006) and a non-significant p-value (0.09)suggests the evidence is not significant
+# there are also very small confidence intervals
 
 #Q2. Is more of the variation in slope estimates distributed among or within species?
-#A. among species? significant heterogeneity p value?
+#A. within species? 
+#sigma values (1 = among, 2 = within), estimate is greater within species
 
 #Q3. Is trend in brood size more positive for populations in protected areas? (Clue: you will need to add an extra moderator to your meta-analysis)
-#A. No it is not more positive
+#A. No it is not more positive, it is negative 
 meta6<-rma.mv(yi=slope,V=se2,mods=~protected.area,random=~1|Species/id.pop,data=birdbroods)
 meta6
 #Q4. If the information was available, what other terms do you think it would be worth including as random effects?
