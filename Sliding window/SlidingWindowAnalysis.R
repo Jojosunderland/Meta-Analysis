@@ -196,25 +196,30 @@ ggplot(pred_cater, aes(x,predicted))+
 ### SECTION 2: Blue tit hatch data ###
 ######################################
 
+# Data exploration, how is the data structured?
 bird_timing <- read.csv("bird_timing.csv")
 head(bird_timing)
 
 bird_timing <- left_join(bird_timing, annual_temp, by="site_year")
 
+# Plot blue tit hatch date by year, using colours to show different sites
 ggplot(bird_timing, aes(year, hatch_date, col=site))+ 
   geom_point()+ 
   xlab("Year")+
   ylab("Blue tit hatch date (Ordinal date, 1 = 1st Jan)")+
   theme_bw()
 
+# Plot blue tit hatch date by average temperature, use different colours for different sites or years
 ggplot(bird_timing, aes(mean_temp, hatch_date, col=site))+ 
   geom_point()+ 
   xlab("Temperature (°C)")+
   ylab("Blue tit hatch date (Ordinal date, 1 = 1st Jan)")+
   theme_bw()
 
-# Sliding window analysis: when does temperature affect blue tit hatch date?
+## Sliding window analysis: when does temperature affect blue tit hatch date?
 
+# Outline the windows to be tested 
+# Make a dataframe that shows the different windows, their start and end points and unique ID
 bird_start_col <- seq(2,105,7) 
 
 bird_duration <- seq(7,105,7) 
@@ -234,7 +239,8 @@ for(i in 1:nrow(bird_windows)){
   points(bird_windows[i,c("start_col","end_col")], c(i,i), type="l") 
 }
 
-# null model and results dataframe
+# Prepare a null model for comparison 
+# Make a data frame for the results of the sliding window analysis
 
 bird_base_mod <- lmer(hatch_date ~ 1 + (1|site) + (1|year), bird_timing, REML=F)
 summary(bird_base_mod)
@@ -242,7 +248,7 @@ summary(bird_base_mod)
 bird_slidwin <- data.frame(matrix(NA, ncol=6, nrow=nrow(bird_windows)))
 colnames(bird_slidwin) <- c("window_ID", "start_date", "end_date", "deltaAICc", "temp_coef", "temp_SE")
 
-# Run the models
+# Run the models, using a for loop to run a model for each window and store the required info
 
 for(i in 1:nrow(bird_windows)){
   
@@ -269,6 +275,8 @@ for(i in 1:nrow(bird_windows)){
 View(bird_slidwin)
 
 # Plot the windows by their delta AIC 
+# Plot a line for each window by its delta AICc value to visualise the results of the sliding window. 
+# Include a line 2 deltaAICc above the lowest line to see if any other windows performed similarly well.
 plot(NA, xlim=c(min(bird_slidwin$start_date),max(bird_slidwin$end_date)),
      ylim=c(min(bird_slidwin$deltaAICc),max(bird_slidwin$deltaAICc)), 
      xlab="Ordinal date (1 = 1st Jan)", ylab="deltaAICc") 
@@ -280,7 +288,9 @@ for(i in 1:nrow(bird_slidwin)){
 
 abline(h=(min(bird_slidwin$deltaAICc)+2), col="red", lty="dashed")
 
-# What effect does temperature have on blue tit hatch date?
+## What effect does temperature have on blue tit hatch date?
+
+# Run the model with temperature from the best fitting window againt o store the whole model and make predictions
 bird_wind_row <- which(bird_slidwin$deltaAICc==min(bird_slidwin$deltaAICc))
 
 bird_wind_ID <- bird_slidwin$window_ID[bird_wind_row] 
@@ -305,6 +315,7 @@ bird_temp_confint
 
 pred_bird <- ggpredict(bird_mod, "best_temp")
 
+# Plot the prediction for how hatch date changes with temperature over the data points
 ggplot(pred_bird, aes(x,predicted))+ 
   geom_line(lwd=1.2)+ 
   geom_point(data=bird_timing, aes(best_temp, hatch_date))+ 
