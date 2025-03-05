@@ -111,3 +111,37 @@ lm_fo <- lm(BirthWt~fatherBirthWt,offspring_means_F)
 summary(lm_fo)$coeff[2,1:2]*2
 
 ## Part 3: Estimating heritability from a dam-sire model
+
+# make factors for gremlin
+deer_data$Sex<-as.factor(deer_data$Sex)
+deer_data$BirthYear<-as.factor(deer_data$BirthYear)
+deer_data$Father<-as.factor(deer_data$Father)
+deer_data$Mother<-as.factor(deer_data$Mother)
+deer_data$ID<-as.factor(deer_data$ID)
+
+# in gremlin we need a dataset without NAs, but we have missing fathers in our dataset. We can therefore subset the data to remove those that don't have a father
+father_subset<- subset(deer_data, !is.na(Father))
+
+# a gremlin model is very similar, but we have different arguments for fixed and random effects. The argument 'v' tells gremlin how much information to print when running the model - these model are fairly simple so we will tell it not to output the information (v=0).
+ds1 <- gremlin(BirthWt ~ Sex,
+               random = ~ BirthYear + Mother + Father,
+               data = father_subset,v=0)
+summary(ds1)
+
+summary(ds1)$varcompSummary
+
+h2_ds <- deltaSE(list(
+  h2 ~ V3*4 / (V1 + V2 + V3 + V4),
+  m2 ~ (V2-V3) / (V1 + V2 + V3 + V4)
+), ds1)
+h2_ds
+
+## Part 4: Estimating heritability from an animal model
+
+Ainv <- makeAinv(deer_ped)$Ainv
+
+am1 <- gremlin(BirthWt ~ Sex,
+               random = ~ BirthYear + ID,
+               ginverse = list(ID = Ainv),
+               data = deer_data, v=0)
+summary(am1)$varcompSummary
