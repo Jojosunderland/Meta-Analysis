@@ -173,7 +173,7 @@ meta4
 
 #import the data into R
 birdbroods<-read.csv("~/Documents/WorkingD/Meta-Analysis/birdbroods.csv",sep=",",header=TRUE)
-birdbroods
+View(birdbroods)
 
 plot(birdbroods$slope,(1/birdbroods$slope.SE),xlab="Slope",ylab="Precision, (1/se)")
 birdbroods$se2<-birdbroods$slope.SE^2
