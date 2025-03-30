@@ -18,8 +18,8 @@ View(data)
 # Remove NAs from each start/end column
 ss_clean <- data[!is.na(data$spring_start), ] # ss = Spring start
 sc_clean <- data[!is.na(data$spring_comp), ] # sc = Spring completion
-fs_clean <- data[!is.na(data$fall_start), ] # fs = fall start
-fc_clean <- data[!is.na(data$fall_comp), ] # fc = fall completion
+fs_clean <- data[!is.na(data$fall_start), ] # fs = Fall start
+fc_clean <- data[!is.na(data$fall_comp), ] # fc = Fall completion
 
 ########################## META ANALYSES ##############################
 
