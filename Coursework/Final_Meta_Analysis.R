@@ -120,7 +120,7 @@ quartz()
 par(mfrow = c(1,2))
 # Spring start
 forest(ss_metayear, cex.lab=0.8, cex.axis=0.8,addfit=FALSE,shade="zebra", 
-       xlab = "Ordinal Day of Spring Moult Start",lwd = 2, pch = 15, cex = 0.8,
+       xlab = "Ordinal Day of Spring Moult Initiation",lwd = 2, pch = 15, cex = 0.8,
        slab = year, border = NA, xlim = c(0,250),
        ylim = c(-2, ss_metayear$k + 3), header = 'Year',
        colout = row_colours_ss)
@@ -130,7 +130,7 @@ addpoly.default(x = est_ss, sei = se_ss, rows = -1, col = "#5CC8A7", mlab = "Ran
 
 # Spring end 
 forest(sc_metayear, cex.lab=0.8,col = 'red', cex.axis=0.8,addfit=FALSE,shade="zebra", 
-       xlab = "Ordinal Day of Spring Moult End",lwd = 2, pch = 15, cex = 0.8,
+       xlab = "Ordinal Day of Spring Moult Completion",lwd = 2, pch = 15, cex = 0.8,
        slab = sc_ordered_year$year, xlim = c(50,300), border = NA,
        ylim = c(-2, ss_metayear$k + 3), header = 'Year',
        colout = row_colours_sc)
@@ -156,7 +156,7 @@ quartz()
 par(mfrow = c(1,2))
 # Fall start
 forest(fs_metayear, cex.lab=0.8, cex.axis=0.8,addfit=FALSE,shade="zebra", 
-       xlab = "Ordinal Day of Fall Moult Start",lwd = 2, pch = 15, cex = 0.8,
+       xlab = "Ordinal Day of Fall Moult Initiation",lwd = 2, pch = 15, cex = 0.8,
        slab = fs_ordered_year$year, border = NA, xlim = c(200,400),
        ylim = c(-2, fs_metayear$k + 3), header = 'Year',
        colout = row_colours_fs)
@@ -166,7 +166,7 @@ addpoly.default(x = est_fs, sei = se_fs, rows = -1, col = "#5CC8A7", mlab = "Ran
 
 # Fall end
 forest(fc_metayear, cex.lab=0.8,col = 'red', cex.axis=0.8,addfit=FALSE,shade="zebra", 
-       xlab = "Ordinal Day of Fall Moult End",lwd = 2, pch = 15, cex = 0.8,
+       xlab = "Ordinal Day of Fall Moult Completion",lwd = 2, pch = 15, cex = 0.8,
        slab = fc_ordered_year$year, xlim = c(200,500), border = NA,
        ylim = c(-2, fs_metayear$k + 2), header = 'Year',
        colout = row_colours_fc)
@@ -176,27 +176,39 @@ addpoly.default(x = est_fc, sei = se_fc, rows = -1, col = "#5CC8A7", mlab = "Ran
 
 ############### REGPLOTS: EFFECT SIZE VS YEAR / LATITUDE / ELEVATION #################
 
+# Need the non-centred mods for appropriate axis
+ss_metayear <- rma.mv(yi = spring_start, V = ss_se^2, mods = ~ year + species + latitude + elevation, 
+                      random = list(~1|site, ~1|study),, data = ss_ordered_year, method = "REML")
+
+sc_metayear <- rma.mv(yi = spring_comp, V = sc_se^2, mods =  ~ year + species + latitude + elevation, 
+                      random = list(~1|site, ~1|study), data = sc_ordered_year, method = "REML")
+
+fs_metayear <- rma.mv(yi = fall_start, V = fs_se^2, mods =  ~ year + species + latitude + elevation, 
+                      random = list(~1|site, ~1|study), data = fs_ordered_year, method = "REML")
+
+fc_metayear <- rma.mv(yi = fall_comp, V = fc_se^2, mods =  ~ year + species + latitude + elevation, 
+                      random = list(~1|site, ~1|study), data = fc_ordered_year, method = "REML")
 ## Spring and fall start day vs year, lat and elevation
 quartz()
 par(mfrow=c(2,3))
 regplot(ss_metayear, 
         mod = "year", 
         xlab = "Year", 
-        ylab = "Effect Size (Ordinal Spring Start)", 
+        ylab = "Effect Size (Ordinal Spring Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(ss_metayear, 
         mod = "latitude", 
         xlab = "Latitude", 
-        ylab = "Effect Size (Ordinal Spring Start)", 
+        ylab = "Effect Size (Ordinal Spring Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(ss_metayear, 
         mod = "elevation", 
         xlab = "Elevation (m)", 
-        ylab = "Effect Size (Ordinal Spring Start)", 
+        ylab = "Effect Size (Ordinal Spring Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
@@ -204,21 +216,21 @@ regplot(ss_metayear,
 regplot(fs_metayear, 
         mod = "year", 
         xlab = "Year", 
-        ylab = "Effect Size (Ordinal Fall Start)", 
+        ylab = "Effect Size (Ordinal Fall Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(fs_metayear, 
         mod = "latitude", 
         xlab = "Latitude", 
-        ylab = "Effect Size (Ordinal Fall Start)", 
+        ylab = "Effect Size (Ordinal Fall Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(fs_metayear, 
         mod = "elevation", 
         xlab = "Elevation (m)", 
-        ylab = "Effect Size (Ordinal Spring Start)", 
+        ylab = "Effect Size (Ordinal Spring Initiation)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
@@ -229,21 +241,21 @@ par(mfrow=c(2,3))
 regplot(sc_metayear, 
         mod = "year", 
         xlab = "Year", 
-        ylab = "Effect Size (Ordinal Spring End)", 
+        ylab = "Effect Size (Ordinal Spring Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(sc_metayear, 
         mod = "latitude", 
         xlab = "Latitude", 
-        ylab = "Effect Size (Ordinal Spring End)", 
+        ylab = "Effect Size (Ordinal Spring Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(sc_metayear, 
         mod = "elevation", 
         xlab = "Elevation (m)", 
-        ylab = "Effect Size (Ordinal Spring End)", 
+        ylab = "Effect Size (Ordinal Spring Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
@@ -251,24 +263,104 @@ regplot(sc_metayear,
 regplot(fc_metayear, 
         mod = "year", 
         xlab = "Year", 
-        ylab = "Effect Size (Ordinal Fall End)", 
+        ylab = "Effect Size (Ordinal Fall Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(fc_metayear, 
         mod = "latitude", 
         xlab = "Latitude", 
-        ylab = "Effect Size (Ordinal Fall End)", 
+        ylab = "Effect Size (Ordinal Fall Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
 regplot(fc_metayear, 
         mod = "elevation", 
         xlab = "Elevation (m)", 
-        ylab = "Effect Size (Ordinal Fall End)", 
+        ylab = "Effect Size (Ordinal Fall Completion)", 
         col = "black", 
         ci = TRUE, 
         bg = "lightblue")
+
+# Figuring out what is causing the opposing trends in forest vs regplot (spring start vs year)
+
+library(ggplot2)
+
+# Group by Study ID
+ss_ordered_year$study <- as.factor(ss_ordered_year$study)
+
+study_names <- c("1" = "Zimova et al. (2014)",
+                 "2" = "Zimova et al. (2019)",
+                 "3" = "Peltier et al. (2023)",
+                 "4" = "Mills et al. (2013)",
+                 "5" = "Zimova et al. (2020)",
+                 "6" = "Kumar et al. (2020)",
+                 "7" = "Stokes et al. (2023)")
+
+levels(ss_ordered_year$study) <- study_names
+
+
+# assign colours to studies
+study_col <- c("Zimova et al. (2014)" = "red", 
+               "Zimova et al. (2019)" = "blue", 
+               "Peltier et al. (2023)" = "cyan2", 
+               "Mills et al. (2013)" = "orchid", 
+               "Zimova et al. (2020)" = "honeydew", 
+               "Kumar et al. (2020)" = "slateblue", 
+               "Stokes et al. (2023)" = "orange")
+
+# plot
+plot1 <- ggplot(data = ss_ordered_year, aes(x = year, y = spring_start, fill = study)) +
+  geom_point(shape = 21, color = "black", size = 3, alpha = 0.9) +
+  labs(x = "Year", y = "Ordinal Day of Spring Moult Initiation", fill = "Study") +
+  scale_fill_manual(values = study_col) +
+  theme_bw() + scale_x_continuous(breaks = seq(2010, 2022, by = 2))
+
+plot1
+
+# Group by study site
+
+plot2 <- ggplot(data = ss_ordered_year, aes(x = year, y = spring_start, fill = site, shape = study)) +
+  geom_point(size = 3, alpha = 0.9) +
+  scale_shape_manual(values = study_shapes) +
+  labs(x = "Year", y = "Ordinal Day of Spring Moult Initiation", fill = "Study Site", shape = "Study") +
+  theme_bw() + scale_x_continuous(breaks = seq(2010, 2022, by = 2))
+
+plot2
+
+# combine both plots together
+
+# Assign shapes (limit to 21–25)
+study_shapes <- c(21, 22, 23, 24, 25, 21, 22)[1:length(levels(ss_ordered_year$study))]
+site_colours <- c("Canada" = "red", 
+                 "Chamberlain" = "blue", 
+                 "Colorado" = "green",
+                 "Gardiner" = "slateblue", 
+                 "Isle Royal" = "orchid", 
+                 "Marcum" = "cyan2",
+                 "Mellen" = "orange", 
+                 "Morrel creek" = "brown", 
+                 "New England" = "yellow",
+                 "Norway" = "pink", 
+                 "Red cliff" = "seagreen", 
+                 "Scotland" = "honeydew") 
+
+
+plot3 <- ggplot(data = ss_ordered_year, 
+                aes(x = year, y = spring_start, 
+                    fill = site, shape = study)) +
+  geom_point(color = "black", size = 3, alpha = 0.9) +
+  scale_shape_manual(values = study_shapes) +
+  scale_fill_manual(values = site_colours) +
+  labs(x = "Year", 
+       y = "Ordinal Day of Spring Moult Initiation", 
+       fill = "Study Site", 
+       shape = "Study ID") +
+  scale_x_continuous(breaks = seq(2010, 2022, by = 2)) +
+  theme_bw() +
+  guides(fill = guide_legend(override.aes = list(shape = 21))) # match legend to site colours
+
+plot3
 
 ###################### META-ANALYSIS RESULTS ############################
 
