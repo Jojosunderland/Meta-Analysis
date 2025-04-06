@@ -23,7 +23,7 @@ world_vect <- vect(world_sf)  # convert to terra SpatVector
 
 # Create Map showing spatial bias of studies
 quartz()
-par(mfrow=c(1,1))
+par(mfrow=c(1,1), bg = 'white') #make background white not transparent
 plot(world_vect, col = "wheat2", border = "grey40", xlab = 'Longitude', ylab="Latitude")
 points(sites_vect, col = "red", pch = 20, cex = 1.2)
 
